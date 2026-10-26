@@ -1,8 +1,8 @@
-# 自动加入 DiaoOrg / DiaoTeam
+# 自动加入 DiaoOrg / DiaoMember
 
 独立页面 `/join/`（首页 Join us 入口）→ 填写 GitHub 已验证邮箱 → Turnstile 验证 → Worker 调用
 `POST /orgs/DiaoOrg/invitations` → GitHub 发送官方邀请邮件 → 用户接受邀请后
-成为普通成员，并自动加入 `diaoteam`（DiaoTeam，ID `20310971`）。
+成为普通成员，并自动加入 `diaomember`（DiaoMember，ID `20310971`）。
 
 服务端固定组织、团队和 `direct_member` 权限，客户端无法指定管理员权限或其他团队。
 GitHub Pages 继续托管静态网站，凭据仅保存在 Cloudflare Worker 的 Secret 中。

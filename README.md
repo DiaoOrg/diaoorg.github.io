@@ -66,5 +66,5 @@ falls back to system fonts when offline.
 
 See [the deployment and operations guide](docs/onboarding.md).
 GitHub sends the official invitation email; accepting it joins **DiaoOrg** as
-an ordinary member and adds the person to **DiaoTeam** (`diaoteam`, ID `20310971`).
+an ordinary member and adds the person to **DiaoMember** (`diaomember`, ID `20310971`).
 Applicants must use an email verified on their GitHub account.

@@ -1,9 +1,9 @@
 // GitHub sends the official email. Acceptance activates org and team membership.
 const ORG = "DiaoOrg";
-const TEAM_ID = 20310971; // github.com/orgs/DiaoOrg/teams/diaoteam
+const TEAM_ID = 20310971; // github.com/orgs/DiaoOrg/teams/diaomember
 const GITHUB = `https://api.github.com/orgs/${ORG}`;
 const MAX_BODY = 4096;
-const SUCCESS = "Invitation sent by GitHub. Check your inbox and spam folder. Accept it to join DiaoOrg and DiaoTeam.";
+const SUCCESS = "Invitation sent by GitHub. Check your inbox and spam folder. Accept it to join DiaoOrg and DiaoMember.";
 
 class InputError extends Error {
   constructor(status, message) { super(message); this.status = status; }
@@ -129,7 +129,7 @@ export async function handleRequest(request, env, fetchImpl = fetch) {
         if (match) {
           const teams = await githubFetch(`${GITHUB}/invitations/${match.id}/teams?per_page=100`);
           if (teams.ok && (await teams.json()).some(team => team.id === TEAM_ID)) {
-            return reply(200, "An invitation to DiaoOrg and DiaoTeam is already pending. Check your GitHub notifications, inbox and spam folder.");
+            return reply(200, "An invitation to DiaoOrg and DiaoMember is already pending. Check your GitHub notifications, inbox and spam folder.");
           }
           break;
         }
