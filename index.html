@@ -66,7 +66,7 @@
         <a href="#pillars">Pillars</a>
         <a href="#loop">The loop</a>
         <a href="#work">Work</a>
-        <a href="#open">Open</a>
+        <a href="#open">Join us</a>
         <a class="nav-cta" href="https://github.com/DiaoOrg" target="_blank" rel="noopener noreferrer">
           GitHub
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6"/></svg>
@@ -458,6 +458,20 @@
             that fail. If you build robots, you already have something to add.
           </p>
 
+          <form class="join-form" data-join-form aria-labelledby="join-heading">
+            <h3 id="join-heading">Build with us.</h3>
+            <p id="join-help">Use an email verified on your GitHub account. Accept the invitation email to join DiaoOrg and the DiaoTeam team.</p>
+            <label for="join-email">GitHub email</label>
+            <div class="join-fields">
+              <input id="join-email" name="email" type="email" autocomplete="email" maxlength="254" placeholder="you@example.com" aria-describedby="join-help join-privacy" required disabled>
+              <button class="btn btn-primary" type="submit" disabled data-join-submit>Send me an invitation</button>
+            </div>
+            <div data-join-challenge></div>
+            <p class="join-status" role="status" aria-live="polite" data-join-status>Loading invitations…</p>
+            <p class="join-privacy" id="join-privacy">Your email is sent to GitHub only to request membership. Cloudflare Turnstile helps prevent abuse. You will join as a regular member.</p>
+            <noscript><p>Enable JavaScript to request an invitation, or contact the organization on GitHub.</p></noscript>
+          </form>
+
           <div class="open-actions">
             <a class="btn btn-primary" href="https://github.com/DiaoOrg" target="_blank" rel="noopener noreferrer">
               Visit the organization
@@ -507,5 +521,6 @@
   </footer>
 
   <script src="main.js"></script>
+  <script src="onboarding.js"></script>
 </body>
 </html>
