@@ -5,6 +5,33 @@ const GITHUB = `https://api.github.com/orgs/${ORG}`;
 const MAX_BODY = 4096;
 const SUCCESS = "Invitation sent by GitHub. Check your inbox and spam folder. Accept it to join DiaoOrg and DiaoMember.";
 
+function githubFailure(body) {
+  const errors = Array.isArray(body.errors) ? body.errors : [];
+  const text = [body.message, ...errors.map(error => typeof error === "string" ? error : error.message)].filter(Boolean).join(" ");
+  if (/(?:daily|24.?hour).*(?:limit|maximum)|(?:limit|maximum).*(?:daily|24.?hour)|(?:invite|invitation).*(?:limit|maximum)|(?:limit|maximum).*(?:invite|invitation)/i.test(text)) return "ORG_INVITATION_LIMIT";
+  if (/secondary rate limit|abuse detection|endpoint.*spammed/i.test(text)) return "GITHUB_RATE_LIMIT";
+  if (/invitations?.*(?:disabled|restricted)|(?:disabled|restricted).*invitations?/i.test(text)) return "INVITATIONS_DISABLED";
+  if (errors.some(error => error.field === "team_ids") || /team.*(?:invalid|not found|does not exist)/i.test(text)) return "TEAM_CONFIGURATION_ERROR";
+  if (/already (?:a |an )?member|already.*part of.*org/i.test(text)) return "ALREADY_MEMBER";
+  if (/already.*invit|invit.*already|invitation.*exists/i.test(text)) return "INVITATION_EXISTS";
+  if (/flagged|suspended/i.test(text)) return "ACCOUNT_RESTRICTED";
+  if (errors.some(error => error.field === "email") || /email.*(?:invalid|verified|blank|missing)/i.test(text)) return "EMAIL_REJECTED";
+  return "GITHUB_VALIDATION_FAILED";
+}
+
+function rejectionLog(response, body, category, token) {
+  const redact = (value) => String(value ?? "").replaceAll(token, "[credential]")
+    .replace(/[^\s<>@"']+@[^\s<>@"']+/gu, "[email]")
+    .replace(/(?:github_pat_|gh[pousr]_)[A-Za-z0-9_]+/g, "[credential]").slice(0, 500);
+  // Sanitized operational diagnostics only; never record submitted emails or tokens.
+  console.warn(JSON.stringify({ event: "github_invitation_rejected", status: response.status, category,
+    githubRequestId: response.headers.get("X-GitHub-Request-Id"), retryAfter: response.headers.get("Retry-After"), message: redact(body.message),
+    errors: (Array.isArray(body.errors) ? body.errors : []).slice(0, 5).map(error => typeof error === "string"
+      ? { message: redact(error) }
+      : Object.fromEntries(["resource", "field", "code", "message"].filter(key => error[key]).map(key => [key, redact(error[key])]))),
+  }));
+}
+
 class InputError extends Error {
   constructor(status, message) { super(message); this.status = status; }
 }
@@ -48,7 +75,7 @@ export async function handleRequest(request, env, fetchImpl = fetch) {
       "X-Content-Type-Options": "nosniff",
       "Vary": "Origin",
       ...(allowed ? { "Access-Control-Allow-Origin": origin } : {}),
-      ...(status === 429 ? { "Retry-After": "60" } : {}),
+      ...(status === 429 && extra.code !== "ORG_INVITATION_LIMIT" ? { "Retry-After": "60" } : {}),
     },
   });
   if (!allowed) return reply(403, "This origin is not allowed.");
@@ -119,7 +146,21 @@ export async function handleRequest(request, env, fetchImpl = fetch) {
       body: JSON.stringify({ email, role: "direct_member", team_ids: [TEAM_ID] }),
     });
     if (invitation.status === 201) return reply(201, SUCCESS);
+    const failure = await invitation.json().catch(() => ({}));
+    const category = githubFailure(failure);
+    const reference = invitation.headers.get("X-GitHub-Request-Id");
+    rejectionLog(invitation, failure, category, env.GITHUB_ORG_TOKEN);
+    if (category === "ORG_INVITATION_LIMIT") {
+      return reply(429, "GitHub's organization invitation limit has been reached. New organizations can usually send 50 invitations per 24 hours. Please try again later.", { code: category, reference });
+    }
+    if (category === "GITHUB_RATE_LIMIT") return reply(429, "GitHub is temporarily limiting invitations. Please try again later.", { code: category, reference });
+    if (category === "INVITATIONS_DISABLED" || category === "TEAM_CONFIGURATION_ERROR") {
+      return reply(503, "GitHub is preventing organization invitations. Please contact DiaoOrg so an administrator can resolve this.", { code: category, reference });
+    }
     if (invitation.status === 422) {
+      if (category === "ALREADY_MEMBER") return reply(409, "You are already a DiaoOrg member. Contact an administrator if you need access to DiaoMember.", { code: category, reference });
+      if (category === "ACCOUNT_RESTRICTED") return reply(422, "GitHub has restricted this account from accepting organization invitations. Please check your GitHub account status or contact GitHub Support.", { code: category, reference });
+      if (category === "EMAIL_REJECTED") return reply(422, "GitHub rejected this email address. Check that it is added and verified in your GitHub account settings.", { code: category, reference });
       // Only report a pending invitation when its requested team is confirmed.
       for (let page = 1; page <= 10; page++) {
         const pending = await githubFetch(`${GITHUB}/invitations?per_page=100&page=${page}`);
@@ -135,7 +176,8 @@ export async function handleRequest(request, env, fetchImpl = fetch) {
         }
         if (invitations.length < 100) break;
       }
-      return reply(409, "GitHub could not create this invitation. Use an email verified on your GitHub account. If you are already a member or have an older invitation, contact DiaoOrg for team access.");
+      if (category === "INVITATION_EXISTS") return reply(409, "A GitHub invitation already exists. Sign in to GitHub and check your pending organization invitations, or contact DiaoOrg for help.", { code: category, reference });
+      return reply(409, "GitHub rejected this invitation request. Please contact DiaoOrg so an administrator can check the specific reason.", { code: category, reference });
     }
     if (invitation.status === 429 || (invitation.status === 403 &&
         (invitation.headers.get("Retry-After") || invitation.headers.get("X-RateLimit-Remaining") === "0"))) {

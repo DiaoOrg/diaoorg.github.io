@@ -173,3 +173,26 @@ test("GitHub and verification failures never expose upstream details or credenti
     assert.doesNotMatch(await response.text(), /private-/);
   }
 });
+
+test("distinguishes organization invitation limits from invalid emails and configuration failures", async () => {
+  for (const [body, expectedStatus, expectedCode] of [
+    [{ message: "You have exceeded your daily invitation limit" }, 429, "ORG_INVITATION_LIMIT"],
+    [{ message: "Validation Failed", errors: [{ resource: "OrganizationInvitation", field: "data", code: "unprocessable", message: "Over invitation rate limit" }] }, 429, "ORG_INVITATION_LIMIT"],
+    [{ message: "Validation Failed", errors: [{ message: "You cannot invite more users because you have reached the invitation limit" }] }, 429, "ORG_INVITATION_LIMIT"],
+    [{ message: "You have exceeded a secondary rate limit" }, 429, "GITHUB_RATE_LIMIT"],
+    [{ message: "Organization invitations are disabled" }, 503, "INVITATIONS_DISABLED"],
+    [{ message: "Validation Failed", errors: [{ field: "team_ids", code: "invalid" }] }, 503, "TEAM_CONFIGURATION_ERROR"],
+    [{ message: "User is already a member of this organization" }, 409, "ALREADY_MEMBER"],
+    [{ message: "Account has been flagged" }, 422, "ACCOUNT_RESTRICTED"],
+    [{ message: "Validation Failed", errors: [{ field: "email", code: "invalid" }] }, 422, "EMAIL_REJECTED"],
+  ]) {
+    const mock = queue(json(verified), json(body, 422, { "X-GitHub-Request-Id": "test-reference" }));
+    const response = await handleRequest(request(), environment(), mock.fetch);
+    assert.equal(response.status, expectedStatus);
+    const result = await response.json();
+    assert.equal(result.code, expectedCode);
+    assert.equal(result.reference, "test-reference");
+    if (expectedCode === "ORG_INVITATION_LIMIT") assert.equal(response.headers.get("Retry-After"), null);
+    assert.equal(mock.calls.length, 2);
+  }
+});

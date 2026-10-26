@@ -53,11 +53,16 @@ CI 自动运行接口回归测试与 Worker 打包检查。测试使用模拟服
 - API 仅允许 `https://diaoorg.github.io` 的浏览器 Origin。CORS 不是身份验证，
   防滥用依赖 Turnstile、限流和 GitHub 自身配额。
 - 邮箱仅用于 GitHub 邀请及摘要限流，不写入仓库、数据库或应用日志。
-  不记录上游响应，Worker observability 默认关闭。Cloudflare 与 GitHub 仍按各自政策处理请求。
+  失败请求仅输出脱敏的 GitHub 错误分类、原因及请求 ID，便于实时诊断；不记录提交的邮箱、
+  验证 token 或凭据。Worker observability 默认关闭，不保留这些应用日志。
+  Cloudflare 与 GitHub 仍按各自政策处理请求。
 - 重复申请遇到 422 时，最多检查 1000 条待接受邀请，且仅在确认包含目标团队后
   显示“已有邀请”。既有组织成员或其他团队的旧邀请应由组织管理员处理。
 - GitHub 邀请一般 7 天过期；被邀请邮箱必须绑定并验证。组织如果要求 2FA，
   申请者接受前须启用。新组织通常每天最多 50 个邀请，满足 GitHub 条件后为 500 个。
+- GitHub 返回 `422` + `Over invitation rate limit` 时，接口映射为 `429` 和
+  `ORG_INVITATION_LIMIT`，明确提示组织邀请限流。GitHub 未提供该配额的准确恢复时间时，
+  不返回虚构的 60 秒重试时间。不要将所有 `422` 都解释为邮箱未验证。
 - Token 过期、撤销或权限不足时，接口返回临时不可用，不能把失败当作已发送。
   定期轮换 `GITHUB_ORG_TOKEN`；Turnstile Secret 轮换时同步更新 Worker。
 - 暂停入口：将 `apiBaseUrl` 清空并发布。要同时停止所有直接 API 请求，请在
