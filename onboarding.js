@@ -81,7 +81,6 @@
         script.onerror = () => reject(new Error("Could not load verification. Check your connection and reload the page."));
         document.head.appendChild(script);
       });
-      await new Promise((resolve) => window.turnstile.ready(resolve));
       widgetId = window.turnstile.render(challenge, {
         sitekey: settings.siteKey,
         action: "onboarding",
@@ -106,7 +105,7 @@
       email.disabled = false;
       say("Complete the security check to request your invitation.");
     } catch (error) {
-      say(error.message, true);
+      say("The invitation service could not load. Please reload the page and try again.", true);
     }
   };
   init();
