@@ -5,6 +5,7 @@
   if (!form) return;
   const email = form.elements.email;
   const button = form.querySelector("[data-join-submit]");
+  const buttonLabel = form.querySelector("[data-join-button-label]");
   const status = form.querySelector("[data-join-status]");
   const challenge = form.querySelector("[data-join-challenge]");
   let apiBase;
@@ -12,9 +13,10 @@
   let widgetId;
   let busy = false;
 
-  const say = (message, error = false) => {
+  const say = (message, error = false, state = "idle") => {
     status.textContent = message;
     status.classList.toggle("is-error", error);
+    form.dataset.state = error ? "error" : state;
   };
   const updateButton = () => { button.disabled = busy || !token; };
   const getJSON = async (url, options = {}) => {
@@ -29,16 +31,17 @@
     if (busy || !token || !apiBase || !form.reportValidity()) return;
     busy = true;
     email.disabled = true;
-    button.textContent = "Sending invitation…";
+    form.setAttribute("aria-busy", "true");
+    buttonLabel.textContent = "Sending invitation…";
     updateButton();
-    say("Requesting your GitHub invitation…");
+    say("Requesting your GitHub invitation…", false, "sending");
     try {
       const result = await getJSON(`${apiBase}/api/invite`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.value.trim(), turnstileToken: token }),
       });
-      say(result.message);
+      say(result.message, false, "success");
       email.value = "";
     } catch (error) {
       say(error.name === "TimeoutError"
@@ -50,7 +53,8 @@
       busy = false;
       token = "";
       email.disabled = false;
-      button.textContent = "Send me an invitation";
+      form.setAttribute("aria-busy", "false");
+      buttonLabel.textContent = "Send invitation";
       updateButton();
       window.turnstile.reset(widgetId);
     }
@@ -82,9 +86,17 @@
         sitekey: settings.siteKey,
         action: "onboarding",
         theme: "dark",
-        size: window.innerWidth < 600 ? "compact" : "flexible",
-        callback: (value) => { token = value; updateButton(); },
-        "expired-callback": () => { token = ""; updateButton(); },
+        size: challenge.clientWidth < 300 ? "compact" : "flexible",
+        callback: (value) => {
+          token = value;
+          updateButton();
+          if (!busy && ["idle", "loading", "ready"].includes(form.dataset.state)) say("Verification complete. Your invitation is one click away.", false, "ready");
+        },
+        "expired-callback": () => {
+          token = "";
+          updateButton();
+          if (!busy && form.dataset.state !== "success") say("Verification expired. Please verify again.", true);
+        },
         "error-callback": () => {
           token = "";
           updateButton();
@@ -92,7 +104,7 @@
         },
       });
       email.disabled = false;
-      say("Complete verification, then request your invitation. Check your inbox and spam folder.");
+      say("Complete the security check to request your invitation.");
     } catch (error) {
       say(error.message, true);
     }
