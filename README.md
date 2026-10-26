@@ -6,7 +6,8 @@ the open robotics organization at [github.com/DiaoOrg](https://github.com/DiaoOr
 Live at **<https://diaoorg.github.io>**.
 
 No build step, no framework, no dependencies to install. Just HTML, CSS and a
-little JavaScript.
+little JavaScript. The optional membership form uses a separate Cloudflare
+Worker; the public site still has no build step.
 
 ## Preview locally
 
@@ -23,6 +24,10 @@ Then open <http://localhost:5173>.
 index.html          page markup and content
 styles.css          design system and layout
 main.js             nav, scroll reveal, scroll spy
+onboarding.js       invitation form and Turnstile verification
+onboarding-config.json  public invitation API origin (never a token)
+worker/             Cloudflare invitation API and rate limits
+tests/              invitation API regression tests
 assets/favicon.svg  gradient "D" mark
 .nojekyll           serve the files as-is on GitHub Pages
 ```
@@ -55,3 +60,10 @@ a `CNAME` file and configure it in **Settings → Pages**.
 
 Space Grotesk, Inter, and JetBrains Mono are loaded from Google Fonts. The site
 falls back to system fonts when offline.
+
+## Automatic organization onboarding
+
+See [the deployment and operations guide](docs/onboarding.md).
+GitHub sends the official invitation email; accepting it joins **DiaoOrg** as
+an ordinary member and adds the person to **DiaoTeam** (`diaoteam`, ID `20310971`).
+Applicants must use an email verified on their GitHub account.

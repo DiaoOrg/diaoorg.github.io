@@ -3,3 +3,8 @@ Thumbs.db
 node_modules/
 .vscode/
 .idea/
+.wrangler/
+.dev.vars
+.dev.vars.*
+.env
+.env.*

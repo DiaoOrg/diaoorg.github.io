@@ -1219,6 +1219,38 @@ main {
   text-wrap: pretty;
 }
 
+.join-form {
+  max-width: 580px;
+  margin-top: 30px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(5, 7, 14, 0.88);
+}
+
+.join-form h3 { margin: 0 0 8px; font: 600 1.4rem var(--font-display); }
+.join-form p { margin: 0 0 18px; color: var(--text-soft); font-size: 13px; line-height: 1.65; }
+.join-form label { display: block; margin-bottom: 8px; font-size: 13px; }
+.join-fields { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+.join-fields input {
+  flex: 1 1 200px;
+  min-width: 0;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+}
+.join-fields .btn { flex: 1 1 auto; font-family: inherit; cursor: pointer; }
+.join-fields :disabled { opacity: .55; cursor: not-allowed; }
+.join-fields .btn:disabled:hover { transform: none; }
+.join-form .join-status { margin: 12px 0; color: #a8eac9; }
+.join-form .join-status.is-error { color: #ffb8b8; }
+.join-form .join-privacy { margin-bottom: 0; color: var(--muted); font-size: 11px; }
+
 .open-actions {
   display: flex;
   flex-wrap: wrap;
