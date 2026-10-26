@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20261026-join-3">
+  <link rel="stylesheet" href="styles.css?v=20261026-join-5">
   <script>document.documentElement.classList.add('js');</script>
 
   <script type="application/ld+json">
@@ -66,7 +66,7 @@
         <a href="#pillars">Pillars</a>
         <a href="#loop">The loop</a>
         <a href="#work">Work</a>
-        <a href="#open">Join us</a>
+        <a href="/join/">Join us</a>
         <a class="nav-cta" href="https://github.com/DiaoOrg" target="_blank" rel="noopener noreferrer">
           GitHub
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6"/></svg>
@@ -425,7 +425,7 @@
 
     <section class="section open" id="open">
       <div class="shell">
-        <div class="open-panel">
+        <div class="open-panel open-panel-home">
           <div class="open-glow" aria-hidden="true"></div>
           <div class="open-intro">
             <p class="kicker"><span>04</span> Open by default</p>
@@ -434,40 +434,13 @@
               We publish code, share what works, and keep the experiments
               visible. If you build robots, you already have something to add.
             </p>
-            <ol class="join-steps" aria-label="How to join">
-              <li><span>01</span> Request your invitation</li>
-              <li><span>02</span> Accept the email from GitHub</li>
-              <li><span>03</span> Build with DiaoTeam</li>
-            </ol>
             <div class="open-actions">
+              <a class="btn btn-primary" href="/join/">Join DiaoOrg <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M8 3l5 5-5 5"/></svg></a>
               <a class="open-link" href="https://github.com/DiaoOrg" target="_blank" rel="noopener noreferrer">Explore the organization <span aria-hidden="true">↗</span></a>
               <a class="open-link" href="https://github.com/fan-ziqi/fill-me-with-robotics" target="_blank" rel="noopener noreferrer">The open experiment <span aria-hidden="true">↗</span></a>
             </div>
           </div>
 
-          <form class="join-form" data-join-form data-state="loading" aria-labelledby="join-heading">
-            <div class="join-card-head">
-              <span class="join-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg></span>
-              <span class="join-badge"><span aria-hidden="true"></span> Open membership</span>
-            </div>
-            <h3 id="join-heading">Join DiaoOrg.</h3>
-            <p class="join-intro">A place for your next experiment.</p>
-            <div class="join-label-row"><label for="join-email">GitHub email</label><span>Required</span></div>
-            <div class="join-email-control">
-              <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="4.5" width="15" height="11" rx="2"/><path d="m3 5 7 5 7-5"/></svg>
-              <input id="join-email" name="email" type="email" autocomplete="email" maxlength="254" placeholder="you@example.com" aria-describedby="join-help join-privacy" required disabled>
-            </div>
-            <p class="join-help" id="join-help">Use an email verified on your GitHub account.</p>
-            <div class="join-verification"><div data-join-challenge></div></div>
-            <button class="btn btn-primary join-submit" type="submit" disabled data-join-submit>
-              <span data-join-button-label>Send invitation</span>
-              <svg class="join-arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5"/></svg>
-              <span class="join-spinner" aria-hidden="true"></span>
-            </button>
-            <p class="join-status" role="status" aria-live="polite" data-join-status>Loading invitations…</p>
-            <p class="join-privacy" id="join-privacy">Your email is only used for this invitation. Accept it to join DiaoOrg and DiaoTeam as a member.</p>
-            <noscript><p>Enable JavaScript to request an invitation, or contact the organization on GitHub.</p></noscript>
-          </form>
 
           <dl class="open-facts">
             <div><dt>Founded</dt><dd>2026</dd></div>
@@ -507,6 +480,5 @@
   </footer>
 
   <script src="main.js"></script>
-  <script src="onboarding.js?v=20261026-join-4"></script>
 </body>
 </html>

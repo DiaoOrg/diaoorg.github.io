@@ -62,7 +62,7 @@
 
   const init = async () => {
     try {
-      const config = await getJSON("onboarding-config.json", { cache: "no-store" });
+      const config = await getJSON("/onboarding-config.json", { cache: "no-store" });
       if (!config.apiBaseUrl) {
         say("Online invitations are not open yet. Visit DiaoOrg on GitHub to get in touch.");
         return;
@@ -76,7 +76,7 @@
       await new Promise((resolve, reject) => {
         const script = document.createElement("script");
         script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
-        script.async = true;
+        script.async = false;
         script.onload = resolve;
         script.onerror = () => reject(new Error("Could not load verification. Check your connection and reload the page."));
         document.head.appendChild(script);

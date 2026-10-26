@@ -25,6 +25,7 @@ index.html          page markup and content
 styles.css          design system and layout
 main.js             nav, scroll reveal, scroll spy
 onboarding.js       invitation form and Turnstile verification
+join/index.html     dedicated membership page at /join/
 onboarding-config.json  public invitation API origin (never a token)
 worker/             Cloudflare invitation API and rate limits
 tests/              invitation API regression tests

@@ -1,6 +1,6 @@
 # 自动加入 DiaoOrg / DiaoTeam
 
-首页 `#open` → 填写 GitHub 已验证邮箱 → Turnstile 验证 → Worker 调用
+独立页面 `/join/`（首页 Join us 入口）→ 填写 GitHub 已验证邮箱 → Turnstile 验证 → Worker 调用
 `POST /orgs/DiaoOrg/invitations` → GitHub 发送官方邀请邮件 → 用户接受邀请后
 成为普通成员，并自动加入 `diaoteam`（DiaoTeam，ID `20310971`）。
 
