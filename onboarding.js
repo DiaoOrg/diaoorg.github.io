@@ -77,6 +77,7 @@
         script.onerror = () => reject(new Error("Could not load verification. Check your connection and reload the page."));
         document.head.appendChild(script);
       });
+      await new Promise((resolve) => window.turnstile.ready(resolve));
       widgetId = window.turnstile.render(challenge, {
         sitekey: settings.siteKey,
         action: "onboarding",
