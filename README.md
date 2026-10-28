@@ -1,6 +1,6 @@
 # miao-org.github.io
 
-A short, single-page site for **miao — Mechanics, Intelligence, Actuation & Operation**,
+A short, single-page site for **miao — Mechatronics, Intelligence, Actuation & Operation**,
 the open robotics organization at [github.com/miao-org](https://github.com/miao-org).
 
 Live at **<https://miao-org.github.io>**.
