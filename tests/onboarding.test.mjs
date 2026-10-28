@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { handleRequest } from "../worker/index.js";
 
-const origin = "https://diaoorg.github.io";
-const verified = { success: true, hostname: "diaoorg.github.io", action: "onboarding" };
+const origin = "https://miao-org.github.io";
+const verified = { success: true, hostname: "miao-org.github.io", action: "onboarding" };
 const validBody = { email: "  Builder@example.com  ", turnstileToken: "challenge-token" };
 const json = (body, status = 200, headers = {}) => new Response(JSON.stringify(body), { status, headers });
 const allow = { limit: async () => ({ success: true }) };
@@ -47,7 +47,7 @@ test("sends an email invitation with the fixed ordinary role and verified team I
   const verification = mock.calls[0];
   assert.equal(JSON.parse(verification.options.body).remoteip, "192.0.2.1");
   const invite = mock.calls[1];
-  assert.equal(invite.url, "https://api.github.com/orgs/DiaoOrg/invitations");
+  assert.equal(invite.url, "https://api.github.com/orgs/miao-org/invitations");
   assert.deepEqual(JSON.parse(invite.options.body), {
     email: "Builder@example.com", role: "direct_member", team_ids: [20310971],
   });
@@ -147,7 +147,7 @@ test("does not claim success for existing members, unknown emails or pending inv
     const mock = queue(json(verified), json({}, 422), ...tail);
     const response = await handleRequest(request(), environment(), mock.fetch);
     assert.equal(response.status, 409);
-    assert.match((await response.json()).message, /contact DiaoOrg/);
+    assert.match((await response.json()).message, /contact miao-org/);
   }
 });
 

@@ -9,5 +9,5 @@
   </defs>
   <rect width="32" height="32" rx="8" fill="#05070e"/>
   <rect x=".5" y=".5" width="31" height="31" rx="7.5" fill="none" stroke="#ffffff" stroke-opacity=".14"/>
-  <path fill="url(#g)" fill-rule="evenodd" d="M8.5 6.5h8.2a9 9 0 0 1 0 18H8.5a1 1 0 0 1-1-1v-16a1 1 0 0 1 1-1Zm3.6 4.2v9.6h4.3a4.8 4.8 0 0 0 0-9.6h-4.3Z"/>
+  <path fill="url(#g)" d="M6 24V8h4l6 9 6-9h4v16h-4V15l-6 8-6-8v9Z"/>
 </svg>

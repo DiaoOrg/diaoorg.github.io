@@ -1,8 +1,9 @@
-# 自动加入 DiaoOrg / DiaoMember
+# 自动加入 miao-org 与成员团队
 
 独立页面 `/join/`（首页 Join us 入口）→ 填写 GitHub 已验证邮箱 → Turnstile 验证 → Worker 调用
-`POST /orgs/DiaoOrg/invitations` → GitHub 发送官方邀请邮件 → 用户接受邀请后
-成为普通成员，并自动加入 `diaomember`（DiaoMember，ID `20310971`）。
+`POST /orgs/miao-org/invitations` → GitHub 发送官方邀请邮件 → 用户接受邀请后
+成为普通成员，并自动加入成员团队（ID `20310971`）。团队通过固定 ID 指定，
+显示名称与 slug 的变化不需要修改邀请请求。
 
 服务端固定组织、团队和 `direct_member` 权限，客户端无法指定管理员权限或其他团队。
 GitHub Pages 继续托管静态网站，凭据仅保存在 Cloudflare Worker 的 Secret 中。
@@ -10,14 +11,14 @@ GitHub Pages 继续托管静态网站，凭据仅保存在 Cloudflare Worker 的
 
 ## 首次部署
 
-1. 在 GitHub 为 DiaoOrg 创建专用的 fine-grained personal access token：
-   Resource owner 选择 **DiaoOrg**，组织权限 **Members: Read and write**。
+1. 在 GitHub 为 miao-org 创建专用的 fine-grained personal access token：
+   Resource owner 选择 **miao-org**，组织权限 **Members: Read and write**。
    无需授予仓库内容写权限。由组织所有者创建，完成组织要求的审批。
    当前部署按所有者要求使用 **No expiration** 的专用令牌。
    也可改用有 Members 写权限的 GitHub App 安装令牌，但需自行实现短期令牌续期。
    仓库默认的 `GITHUB_TOKEN` 不能管理组织成员。
 2. 在 Cloudflare Turnstile 创建 **Managed** widget，允许主机名
-   `diaoorg.github.io`，不要填写协议或路径。将 Site Key 填入
+   `miao-org.github.io`，不要填写协议或路径。将 Site Key 填入
    `worker/wrangler.jsonc` 的 `TURNSTILE_SITE_KEY`；Secret Key 仅配置为下方 Secret。
 3. 安装并登录，再配置两个 Secret：
 
@@ -38,6 +39,12 @@ GitHub Pages 继续托管静态网站，凭据仅保存在 Cloudflare Worker 的
 
 ## 维护与验证
 
+组织或域名更名后，同步更新 Worker 的 `ORG`、`ALLOWED_ORIGIN`、Turnstile
+允许的主机名及前端 `apiBaseUrl`，并确认 `TEAM_ID` 仍属于目标组织。
+当前 Worker 名称为 `miao-org-onboarding`。更改 Worker 名称会创建独立服务，
+需要为该服务重新配置两个 Secret 并部署；仓库中的名称修改不会迁移线上 Secret。
+确认新服务的 `/api/config` 可从网站 Origin 访问后，再发布前端配置。
+
 ```sh
 npm test
 npm run worker:check
@@ -50,7 +57,7 @@ CI 自动运行接口回归测试与 Worker 打包检查。测试使用模拟服
   摘要作为限流 key。Cloudflare Rate Limiting 按边缘位置近似计数，非全局精确配额。
   `namespace_id` 在 Cloudflare 帐户内共享；如已被其他 Worker 使用，应改为独立数字。
 - Turnstile 验证在服务端执行，同时核对 hostname、`onboarding` action、单次 token。
-- API 仅允许 `https://diaoorg.github.io` 的浏览器 Origin。CORS 不是身份验证，
+- API 仅允许 `https://miao-org.github.io` 的浏览器 Origin。CORS 不是身份验证，
   防滥用依赖 Turnstile、限流和 GitHub 自身配额。
 - 邮箱仅用于 GitHub 邀请及摘要限流，不写入仓库、数据库或应用日志。
   失败请求仅输出脱敏的 GitHub 错误分类、原因及请求 ID，便于实时诊断；不记录提交的邮箱、

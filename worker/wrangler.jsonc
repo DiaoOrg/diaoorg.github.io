@@ -1,12 +1,12 @@
 {
   "$schema": "../node_modules/wrangler/config-schema.json",
-  "name": "diaoorg-onboarding",
+  "name": "miao-org-onboarding",
   "main": "index.js",
   "compatibility_date": "2026-10-26",
   "workers_dev": true,
   "preview_urls": false,
   "vars": {
-    "ALLOWED_ORIGIN": "https://diaoorg.github.io",
+    "ALLOWED_ORIGIN": "https://miao-org.github.io",
     "TURNSTILE_SITE_KEY": "0x4AAAAAAFmKHrxpqxO6EDqy"
   },
   "ratelimits": [

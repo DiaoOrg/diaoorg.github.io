@@ -1,5 +1,5 @@
-/* DIAO — organization site
-   Dark, technical, four-colour identity derived from the DIAO framework. */
+/* miao — organization site
+   Dark, technical, four-colour identity derived from the miao framework. */
 
 :root {
   --bg: #05070e;
@@ -12,7 +12,7 @@
   --line: rgba(255, 255, 255, 0.09);
   --line-soft: rgba(255, 255, 255, 0.055);
 
-  --d: #3d86ff;
+  --m: #3d86ff;
   --i: #a86bff;
   --a: #ff9a2e;
   --o: #2ed98a;
@@ -218,7 +218,7 @@ main {
   bottom: 3px;
   left: 13px;
   height: 1px;
-  background: linear-gradient(90deg, var(--d), var(--i), var(--a), var(--o));
+  background: linear-gradient(90deg, var(--m), var(--i), var(--a), var(--o));
   opacity: 0.8;
 }
 
@@ -321,7 +321,7 @@ main {
   pointer-events: none;
 }
 
-.hero-glow-d {
+.hero-glow-m {
   left: -14%;
   bottom: -18%;
   background: radial-gradient(circle, rgba(61, 134, 255, 0.85), transparent 66%);
@@ -449,7 +449,7 @@ main {
   color: transparent;
 }
 
-.letter-d {
+.letter-m {
   background-image: linear-gradient(158deg, #a9e6ff 0%, #4a95ff 42%, #1647d8 100%);
   filter: drop-shadow(0 0 26px rgba(61, 134, 255, 0.45)) drop-shadow(0 18px 55px rgba(25, 70, 200, 0.35));
 }
@@ -479,7 +479,7 @@ main {
   text-wrap: balance;
 }
 
-.c-d { color: #6aa8ff; }
+.c-m { color: #6aa8ff; }
 .c-i { color: #b98bff; }
 .c-a { color: #ffab52; }
 .c-o { color: #4fe0a0; }
@@ -629,7 +629,7 @@ main {
   transition: opacity 0.25s ease;
 }
 
-.rail-item:nth-child(1) { color: var(--d); }
+.rail-item:nth-child(1) { color: var(--m); }
 .rail-item:nth-child(2) { color: var(--i); }
 .rail-item:nth-child(3) { color: var(--a); }
 .rail-item:nth-child(4) { color: var(--o); }
@@ -716,6 +716,10 @@ main {
   color: #6b7890;
   font-size: 9px;
   letter-spacing: 0.08em;
+}
+
+.kicker .brand-name {
+  text-transform: none;
 }
 
 .section h2 {
@@ -941,7 +945,7 @@ main {
   box-shadow: 0 0 12px var(--sc);
 }
 
-.stage:nth-child(1) { --sc: var(--d); }
+.stage:nth-child(1) { --sc: var(--m); }
 .stage:nth-child(2) { --sc: var(--i); }
 .stage:nth-child(3) { --sc: var(--a); }
 .stage:nth-child(4) { --sc: var(--o); }

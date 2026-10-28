@@ -1,9 +1,9 @@
 // GitHub sends the official email. Acceptance activates org and team membership.
-const ORG = "DiaoOrg";
-const TEAM_ID = 20310971; // github.com/orgs/DiaoOrg/teams/diaomember
+const ORG = "miao-org";
+const TEAM_ID = 20310971; // Community team; the numeric ID is independent of its display name.
 const GITHUB = `https://api.github.com/orgs/${ORG}`;
 const MAX_BODY = 4096;
-const SUCCESS = "Invitation sent by GitHub. Check your inbox and spam folder. Accept it to join DiaoOrg and DiaoMember.";
+const SUCCESS = "Invitation sent by GitHub. Check your inbox and spam folder. Accept it to join miao-org and its community team.";
 
 function githubFailure(body) {
   const errors = Array.isArray(body.errors) ? body.errors : [];
@@ -93,7 +93,7 @@ export async function handleRequest(request, env, fetchImpl = fetch) {
   if (request.method !== (path === "/api/config" ? "GET" : "POST")) return reply(405, "Method not allowed.");
   if (!env.GITHUB_ORG_TOKEN || !env.TURNSTILE_SECRET_KEY || !env.TURNSTILE_SITE_KEY ||
       !env.IP_LIMITER || !env.EMAIL_LIMITER) {
-    return reply(503, "Online invitations are not open yet. Please contact DiaoOrg on GitHub.");
+    return reply(503, "Online invitations are not open yet. Please contact miao-org on GitHub.");
   }
   if (path === "/api/config") return reply(200, "Ready.", { siteKey: env.TURNSTILE_SITE_KEY });
   if (request.headers.get("Content-Type")?.split(";")[0].trim().toLowerCase() !== "application/json") {
@@ -135,7 +135,7 @@ export async function handleRequest(request, env, fetchImpl = fetch) {
       "Accept": "application/vnd.github+json",
       "Authorization": `Bearer ${env.GITHUB_ORG_TOKEN}`,
       "X-GitHub-Api-Version": "2026-03-10",
-      "User-Agent": "DiaoOrg-onboarding",
+      "User-Agent": "miao-org-onboarding",
       "Content-Type": "application/json",
     };
     const githubFetch = (url, options = {}) => fetchImpl(url, {
@@ -155,36 +155,36 @@ export async function handleRequest(request, env, fetchImpl = fetch) {
     }
     if (category === "GITHUB_RATE_LIMIT") return reply(429, "GitHub is temporarily limiting invitations. Please try again later.", { code: category, reference });
     if (category === "INVITATIONS_DISABLED" || category === "TEAM_CONFIGURATION_ERROR") {
-      return reply(503, "GitHub is preventing organization invitations. Please contact DiaoOrg so an administrator can resolve this.", { code: category, reference });
+      return reply(503, "GitHub is preventing organization invitations. Please contact miao-org so an administrator can resolve this.", { code: category, reference });
     }
     if (invitation.status === 422) {
-      if (category === "ALREADY_MEMBER") return reply(409, "You are already a DiaoOrg member. Contact an administrator if you need access to DiaoMember.", { code: category, reference });
+      if (category === "ALREADY_MEMBER") return reply(409, "You are already a miao-org member. Contact an administrator if you need access to the community team.", { code: category, reference });
       if (category === "ACCOUNT_RESTRICTED") return reply(422, "GitHub has restricted this account from accepting organization invitations. Please check your GitHub account status or contact GitHub Support.", { code: category, reference });
       if (category === "EMAIL_REJECTED") return reply(422, "GitHub rejected this email address. Check that it is added and verified in your GitHub account settings.", { code: category, reference });
       // Only report a pending invitation when its requested team is confirmed.
       for (let page = 1; page <= 10; page++) {
         const pending = await githubFetch(`${GITHUB}/invitations?per_page=100&page=${page}`);
-        if (!pending.ok) return reply(502, "Could not check pending invitations. Please contact DiaoOrg on GitHub.");
+        if (!pending.ok) return reply(502, "Could not check pending invitations. Please contact miao-org on GitHub.");
         const invitations = await pending.json();
         const match = invitations.find(item => item.email?.toLowerCase() === email.toLowerCase());
         if (match) {
           const teams = await githubFetch(`${GITHUB}/invitations/${match.id}/teams?per_page=100`);
           if (teams.ok && (await teams.json()).some(team => team.id === TEAM_ID)) {
-            return reply(200, "An invitation to DiaoOrg and DiaoMember is already pending. Check your GitHub notifications, inbox and spam folder.");
+            return reply(200, "An invitation to miao-org and its community team is already pending. Check your GitHub notifications, inbox and spam folder.");
           }
           break;
         }
         if (invitations.length < 100) break;
       }
-      if (category === "INVITATION_EXISTS") return reply(409, "A GitHub invitation already exists. Sign in to GitHub and check your pending organization invitations, or contact DiaoOrg for help.", { code: category, reference });
-      return reply(409, "GitHub rejected this invitation request. Please contact DiaoOrg so an administrator can check the specific reason.", { code: category, reference });
+      if (category === "INVITATION_EXISTS") return reply(409, "A GitHub invitation already exists. Sign in to GitHub and check your pending organization invitations, or contact miao-org for help.", { code: category, reference });
+      return reply(409, "GitHub rejected this invitation request. Please contact miao-org so an administrator can check the specific reason.", { code: category, reference });
     }
     if (invitation.status === 429 || (invitation.status === 403 &&
         (invitation.headers.get("Retry-After") || invitation.headers.get("X-RateLimit-Remaining") === "0"))) {
       return reply(429, "GitHub is limiting invitations. Please try again later.");
     }
     if ([401, 403, 404].includes(invitation.status)) {
-      return reply(503, "Invitations are temporarily unavailable. Please contact DiaoOrg on GitHub.");
+      return reply(503, "Invitations are temporarily unavailable. Please contact miao-org on GitHub.");
     }
     return reply(502, "GitHub could not send the invitation. Please try again later.");
   } catch (error) {

@@ -64,7 +64,7 @@
     try {
       const config = await getJSON("/onboarding-config.json", { cache: "no-store" });
       if (!config.apiBaseUrl) {
-        say("Online invitations are not open yet. Visit DiaoOrg on GitHub to get in touch.");
+        say("Online invitations are not open yet. Visit miao-org on GitHub to get in touch.");
         return;
       }
       const url = new URL(config.apiBaseUrl);
